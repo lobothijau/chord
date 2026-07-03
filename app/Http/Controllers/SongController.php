@@ -101,6 +101,42 @@ class SongController extends Controller
         }
     }
 
+    /**
+     * Token-authenticated endpoint for the `chords:import --remote` command.
+     * Dedups on source_url, else on title+artist.
+     */
+    public function apiImport(Request $request)
+    {
+        // Custom header, not Authorization: nginx basic auth owns that one.
+        $token = config('services.import_token');
+        $given = (string) ($request->header('X-Import-Token') ?: $request->bearerToken());
+        if (! $token || ! hash_equals($token, $given)) {
+            abort(403, 'Invalid import token.');
+        }
+
+        $data = $this->validated($request);
+
+        $existing = Song::query()
+            ->when($data['source_url'] ?? null,
+                fn ($q) => $q->where('source_url', $data['source_url']),
+                fn ($q) => $q->where('title', $data['title'])
+                    ->where('artist', $data['artist'] ?? null))
+            ->first();
+
+        if ($existing) {
+            return response()->json(['status' => 'skipped', 'id' => $existing->id, 'title' => $existing->title]);
+        }
+
+        $song = Song::create($data);
+
+        return response()->json([
+            'status' => 'created',
+            'id' => $song->id,
+            'title' => $song->title,
+            'key' => $song->original_key,
+        ], 201);
+    }
+
     private function validated(Request $request): array
     {
         $data = $request->validate([

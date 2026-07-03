@@ -35,4 +35,14 @@ return [
         ],
     ],
 
+    // Bearer token accepted by POST /api/import (production side).
+    'import_token' => env('IMPORT_TOKEN'),
+
+    // Where `chords:import --remote` pushes (local side).
+    'chords_remote' => [
+        'url' => env('CHORDS_REMOTE_URL'),
+        'token' => env('CHORDS_REMOTE_TOKEN'),
+        'basic' => env('CHORDS_REMOTE_BASIC'), // "user:pass" for nginx basic auth
+    ],
+
 ];
