@@ -33,6 +33,16 @@
 
     if (content.value.trim() !== '') refreshPreview();
 
+    // Bookmarklet hands the sheet over via postMessage (any origin — payload
+    // only prefills the form, user reviews before saving).
+    window.addEventListener('message', (e) => {
+        const d = e.data;
+        if (!d || d.chords !== 1 || typeof d.content !== 'string') return;
+        content.value = d.content;
+        e.source?.postMessage('chords:ack', '*');
+        refreshPreview();
+    });
+
     // --- URL import ---
     const urlInput = document.getElementById('fetch-url-input');
     const fetchBtn = document.getElementById('fetch-url-btn');

@@ -15,15 +15,18 @@
     @endif
 
     @php
-        // Grabs selection, else the largest chord block: <pre> (most sites) or div.telabox (chordtela)
+        // Grabs selection, else the largest chord block: <pre> (most sites) or
+        // div.telabox (chordtela). Title/source travel as query params (short,
+        // server cleans the title); the sheet itself goes via postMessage —
+        // URL length limits and clipboard permissions made the old paths flaky.
         $bookmarklet = "javascript:(function(){var s=window.getSelection().toString();"
             ."var p=s||[].map.call(document.querySelectorAll('pre,.telabox'),function(e){return e.innerText}).sort(function(a,b){return b.length-a.length})[0]||'';"
             ."if(!p.trim()){alert('No chords found. Select the chord text first, then click the bookmarklet again.');return}"
-            ."var base='".url('/songs/create')."?title='+encodeURIComponent(document.title)+'&source_url='+encodeURIComponent(location.href);"
-            ."var c=encodeURIComponent(p);"
-            ."if(c.length<6000){window.open(base+'&content='+c)}"
-            ."else{var done=function(){alert('Chords copied to clipboard. Paste (Cmd+V) into the chord sheet box.');window.open(base)};"
-            ."if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(p).then(done,done)}else{done()}}"
+            ."var w=window.open('".url('/songs/create')."?title='+encodeURIComponent(document.title)+'&source_url='+encodeURIComponent(location.href));"
+            ."if(!w){alert('Popup blocked. Allow popups for this site, then try again.');return}"
+            ."var m={chords:1,content:p},n=0;"
+            ."var t=setInterval(function(){if(n++>50){clearInterval(t)}try{w.postMessage(m,'*')}catch(e){}},400);"
+            ."window.addEventListener('message',function(e){if(e.data==='chords:ack')clearInterval(t)});"
             ."})()";
     @endphp
 
