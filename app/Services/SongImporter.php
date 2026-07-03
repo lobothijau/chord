@@ -94,6 +94,30 @@ class SongImporter
     }
 
     /**
+     * Parse a raw browser page title (bookmarklet path) into [artist, title].
+     * Handles Ultimate Guitar's "SONG CHORDS (ver 3) by Artist @ Ultimate-
+     * Guitar.Com" and the chord-blog "Artist - Song | Site" patterns.
+     *
+     * @return array{0: ?string, 1: ?string} [artist, title]
+     */
+    public static function parsePageTitle(string $raw): array
+    {
+        $title = html_entity_decode($raw, ENT_QUOTES | ENT_HTML5);
+
+        if (preg_match('/^(.*?)\s+(?:(?:ACOUSTIC|UKULELE|BASS)\s+)?CHORDS\s*(?:\(ver\.?\s*\d+\))?\s+by\s+(.+?)\s*(?:@.*)?$/iu', $title, $m)) {
+            $song = $m[1];
+            // UG shouts song names in all caps; bring it back down
+            if ($song === mb_strtoupper($song)) {
+                $song = mb_convert_case($song, MB_CASE_TITLE, 'UTF-8');
+            }
+
+            return [trim($m[2]), trim($song)];
+        }
+
+        return self::splitArtistTitle(self::cleanTitle($title));
+    }
+
+    /**
      * Chord blogs title posts as "Artist - Song". Split on the first " - ".
      *
      * @return array{0: ?string, 1: ?string} [artist, title]

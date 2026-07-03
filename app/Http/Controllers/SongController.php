@@ -43,10 +43,10 @@ class SongController extends Controller
         $song = new Song($request->only(['title', 'artist', 'content', 'source_url']));
 
         if ($song->title) {
-            $song->title = SongImporter::cleanTitle($song->title);
-
-            if (! $song->artist) {
-                [$song->artist, $song->title] = SongImporter::splitArtistTitle($song->title);
+            if ($song->artist) {
+                $song->title = SongImporter::cleanTitle($song->title);
+            } else {
+                [$song->artist, $song->title] = SongImporter::parsePageTitle($song->title);
             }
         }
 

@@ -84,6 +84,38 @@ class SongImportTest extends TestCase
             ->assertSee('https://www.chordtela.com/2021/02/got7-encore.html');
     }
 
+    public function test_parses_ultimate_guitar_page_titles(): void
+    {
+        $this->assertSame(
+            ['Linkin Park', 'Somewhere I Belong'],
+            SongImporter::parsePageTitle('SOMEWHERE I BELONG CHORDS (ver 3) by Linkin Park @ Ultimate-Guitar.Com'),
+        );
+        $this->assertSame(
+            ['Oasis', 'Wonderwall'],
+            SongImporter::parsePageTitle('WONDERWALL CHORDS by Oasis @ Ultimate-Guitar.Com'),
+        );
+        $this->assertSame(
+            ['Sheila On 7', 'Dan'],
+            SongImporter::parsePageTitle('DAN ACOUSTIC CHORDS (ver 2) by Sheila On 7 @ Ultimate-Guitar.Com'),
+        );
+        // chord-blog pattern still works through the same entry point
+        $this->assertSame(
+            ['GOT7', 'Encore'],
+            SongImporter::parsePageTitle('Chord GOT7 - Encore | Chordtela'),
+        );
+    }
+
+    public function test_create_form_parses_ug_title_from_bookmarklet(): void
+    {
+        $this->get(route('songs.create', [
+            'title' => 'SOMEWHERE I BELONG CHORDS (ver 3) by Linkin Park @ Ultimate-Guitar.Com',
+            'content' => "C   Em\nlyric",
+        ]))
+            ->assertOk()
+            ->assertSee('value="Somewhere I Belong"', false)
+            ->assertSee('value="Linkin Park"', false);
+    }
+
     public function test_clean_title_strips_site_noise(): void
     {
         $this->assertSame('GOT7 - Encore', SongImporter::cleanTitle('Chord GOT7 - Encore | Chordtela'));
