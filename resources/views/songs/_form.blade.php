@@ -89,5 +89,5 @@
 </form>
 
 @push('scripts')
-    <script defer src="{{ asset('js/form.js') }}"></script>
+    <script defer src="@assetv('js/form.js')"></script>
 @endpush

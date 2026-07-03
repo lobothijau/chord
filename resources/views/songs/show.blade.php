@@ -56,9 +56,9 @@
 @endsection
 
 @push('scripts')
-    <script defer src="{{ asset('js/music.js') }}"></script>
-    <script defer src="{{ asset('js/chord-data.js') }}"></script>
-    <script defer src="{{ asset('js/diagrams.js') }}"></script>
-    <script defer src="{{ asset('js/autoscroll.js') }}"></script>
-    <script defer src="{{ asset('js/player.js') }}"></script>
+    <script defer src="@assetv('js/music.js')"></script>
+    <script defer src="@assetv('js/chord-data.js')"></script>
+    <script defer src="@assetv('js/diagrams.js')"></script>
+    <script defer src="@assetv('js/autoscroll.js')"></script>
+    <script defer src="@assetv('js/player.js')"></script>
 @endpush

@@ -14,5 +14,5 @@
 @endsection
 
 @push('scripts')
-    <script defer src="{{ asset('js/search.js') }}"></script>
+    <script defer src="@assetv('js/search.js')"></script>
 @endpush
