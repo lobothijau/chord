@@ -80,15 +80,33 @@ class SongImporter
             throw new ImportException('No chord block found on the page. '.self::PASTE_HINT);
         }
 
+        [$artist, $title] = self::splitArtistTitle($this->pageTitle($html));
+
         return [
-            'title' => $this->pageTitle($html),
-            'artist' => null,
+            'title' => $title,
+            'artist' => $artist,
             'key' => null,
             'capo' => preg_match('/\bcapo\s*(?:fret|di\s*fret)?\s*(\d{1,2})/i', $content, $m)
                 ? (int) $m[1]
                 : null,
             'content' => $content,
         ];
+    }
+
+    /**
+     * Chord blogs title posts as "Artist - Song". Split on the first " - ".
+     *
+     * @return array{0: ?string, 1: ?string} [artist, title]
+     */
+    public static function splitArtistTitle(?string $title): array
+    {
+        if ($title === null || ! str_contains($title, ' - ')) {
+            return [null, $title];
+        }
+
+        [$artist, $song] = explode(' - ', $title, 2);
+
+        return [trim($artist), trim($song)];
     }
 
     /**

@@ -24,7 +24,7 @@ class ImportCommandTest extends TestCase
         $this->artisan('chords:import', ['urls' => ['https://www.chordtela.com/2021/01/song-one.html']])
             ->assertSuccessful();
 
-        $this->assertDatabaseHas('songs', ['title' => 'Band - Song One']);
+        $this->assertDatabaseHas('songs', ['title' => 'Song One', 'artist' => 'Band']);
         $this->assertSame('G', Song::first()->original_key);
     }
 
@@ -104,7 +104,8 @@ class ImportCommandTest extends TestCase
             return str_contains($request->url(), '/api/import')
                 && $request->hasHeader('X-Import-Token', 'remote-token')
                 && $request->hasHeader('Authorization') // basic auth intact alongside token
-                && $request['title'] === 'Band - Song One';
+                && $request['title'] === 'Song One'
+                && $request['artist'] === 'Band';
         });
     }
 

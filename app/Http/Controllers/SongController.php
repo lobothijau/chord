@@ -44,6 +44,10 @@ class SongController extends Controller
 
         if ($song->title) {
             $song->title = SongImporter::cleanTitle($song->title);
+
+            if (! $song->artist) {
+                [$song->artist, $song->title] = SongImporter::splitArtistTitle($song->title);
+            }
         }
 
         return view('songs.create', ['song' => $song]);

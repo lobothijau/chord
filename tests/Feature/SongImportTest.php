@@ -24,7 +24,8 @@ class SongImportTest extends TestCase
 
         $result = app(SongImporter::class)->import('https://www.chordtela.com/2021/02/got7-encore.html');
 
-        $this->assertSame('GOT7 - Encore', $result['title']);
+        $this->assertSame('Encore', $result['title']);
+        $this->assertSame('GOT7', $result['artist']);
         $this->assertStringContainsString('Every day I dream of you', $result['content']);
         $this->assertStringContainsString('Intro : C Em Am G', $result['content']);
     }
@@ -43,7 +44,8 @@ class SongImportTest extends TestCase
 
         $result = app(SongImporter::class)->import('https://www.chordtela.com/2016/05/uks.html');
 
-        $this->assertSame("U.K's - Cinta Itu Buta", $result['title']);
+        $this->assertSame('Cinta Itu Buta', $result['title']);
+        $this->assertSame("U.K's", $result['artist']);
         $this->assertStringContainsString('Intro', $result['content']);
         $this->assertStringContainsString('penantian ini hanya untuk luka..', $result['content']);
         $this->assertStringNotContainsString('<a', $result['content']);
@@ -76,7 +78,8 @@ class SongImportTest extends TestCase
             'source_url' => 'https://www.chordtela.com/2021/02/got7-encore.html',
         ]))
             ->assertOk()
-            ->assertSee('value="GOT7 - Encore"', false)
+            ->assertSee('value="Encore"', false)
+            ->assertSee('value="GOT7"', false)
             ->assertSee("C   Em\nSome lyric")
             ->assertSee('https://www.chordtela.com/2021/02/got7-encore.html');
     }
