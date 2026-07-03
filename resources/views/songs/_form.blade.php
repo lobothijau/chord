@@ -15,8 +15,9 @@
     @endif
 
     @php
+        // Grabs selection, else the largest chord block: <pre> (most sites) or div.telabox (chordtela)
         $bookmarklet = "javascript:(function(){var s=window.getSelection().toString();"
-            ."var p=s||[].map.call(document.querySelectorAll('pre'),function(e){return e.innerText}).sort(function(a,b){return b.length-a.length})[0]||'';"
+            ."var p=s||[].map.call(document.querySelectorAll('pre,.telabox'),function(e){return e.innerText}).sort(function(a,b){return b.length-a.length})[0]||'';"
             ."if(!p.trim()){alert('No chords found. Select the chord text first, then click the bookmarklet again.');return}"
             ."var base='".url('/songs/create')."?title='+encodeURIComponent(document.title)+'&source_url='+encodeURIComponent(location.href);"
             ."var c=encodeURIComponent(p);"
